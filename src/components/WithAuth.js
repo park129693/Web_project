@@ -7,7 +7,7 @@ const WithAuth = ({children}) => {
     const history = useHistory()
 
     useEffect(() => {
-        fetch('/checkToken')
+        fetch('/api/checkCookie')
         .then(res => {
             if(res.status === 200){
                 setLoading(false)

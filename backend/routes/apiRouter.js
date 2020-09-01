@@ -4,7 +4,8 @@ var User = require('../models/User')
 var jwt = require('jsonwebtoken')
 var WithAuth = require('./middleware')
 var session = require('express-session') // 8월 28일 추가
-
+const { json } = require('body-parser')
+var moment = require('moment')
 
 const secret = "mysecrethhhhhh"
 
@@ -48,6 +49,7 @@ router.route('/api/signin')
     .post((req, res, next) => {
         const {email, password} = req.body
 
+
         User.findOne({email}, (err, result) =>{ 
             if(err) {
                 console.log(err)
@@ -65,7 +67,14 @@ router.route('/api/signin')
                     } else {
                         const payload = {email}
                         const token = jwt.sign(payload, secret, {expiresIn : '1h'})
-                        res.cookie('token', token, {httpOnly:true}).sendStatus(200)
+                        const localTime =  new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
+                        // req.session.cookie.expires = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
+                        req.session.cookie.maxAge = 10000
+                        res.cookie('token', token, {httpOnly:true, expires:new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)}).sendStatus(200)
+
+                        console.log(localTime)
+                        console.log(req.sessionID)
+                        console.log(req.session)
                     }
                })
             }
@@ -80,15 +89,21 @@ router.route('/api/signout')
 router.route('/api/checkCookie')
     .get(WithAuth, (req, res, next) => {
         if(req.cookies.token && req.cookies.token.mberSn !== ""){
-            res.sendStatus(200)
+            res.send(req.session)
         } else {
             res.sendStatus(401)
         }
     })
 
 router.route('/api/loginSession')
-    .post((req, res, next) => {
-
+    .get((req, res, next) => {
+        res.json(req.session)
+        if(!req.session.num) {
+            req.session.num = 1
+        } else {
+            req.session.num = req.session.num + 1
+        }
+        res.send(`Number : ${req.session.num}`)
     })
 
 

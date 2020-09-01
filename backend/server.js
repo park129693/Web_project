@@ -4,6 +4,8 @@ var cookieParser = require('cookie-parser')
 var path = require('path')
 var mongoose = require('mongoose')
 var cors = require('cors')
+var session = require('express-session')
+var FileStore = require('session-file-store')(session)
 
 var apiRouter = require('./routes/apiRouter')
 
@@ -13,6 +15,12 @@ var app = express()
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 app.use(cookieParser())
+app.use(session({ 
+    secret: 'seesionDog',
+    resave: false,
+    saveUninitialized: true,
+    store: new FileStore()
+}))
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true}, (err) => {
     if(err) console.log(err)

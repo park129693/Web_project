@@ -33,6 +33,7 @@ const SignIn = () => {
             body : JSON.stringify(user)
         })
         .then(res => {
+            console.log(res)
             if(res.status === 200){
                 history.push('/') 
             } else {
@@ -65,7 +66,7 @@ const SignIn = () => {
             </div>
             </div>
             </div>
-    <Button type="submit" size="md">Sign In</Button>
+            <Button type="submit" size="md">Sign In</Button>
         </Form>
 
         </div>
