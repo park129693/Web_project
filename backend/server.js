@@ -5,7 +5,7 @@ var path = require('path')
 var mongoose = require('mongoose')
 var cors = require('cors')
 var session = require('express-session')
-var FileStore = require('session-file-store')(session)
+// var FileStore = require('session-file-store')(session)
 
 var apiRouter = require('./routes/apiRouter')
 
@@ -19,7 +19,7 @@ app.use(session({
     secret: 'seesionDog',
     resave: false,
     saveUninitialized: true,
-    store: new FileStore()
+    // store: new FileStore({path: './sessions'})
 }))
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true}, (err) => {

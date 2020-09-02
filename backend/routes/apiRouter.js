@@ -3,9 +3,9 @@ var router = express.Router()
 var User = require('../models/User')
 var jwt = require('jsonwebtoken')
 var WithAuth = require('./middleware')
-var session = require('express-session') // 8월 28일 추가
+var session = require('express-session')
 const { json } = require('body-parser')
-var moment = require('moment')
+const { Store } = require('express-session')
 
 const secret = "mysecrethhhhhh"
 
@@ -26,7 +26,7 @@ var mockData = {
 }
 
 router.route('/api/items')
-    .get((req, res, next) => {
+    .get(WithAuth, (req, res, next) => {
         res.json(mockData)
     })
 
@@ -67,14 +67,17 @@ router.route('/api/signin')
                     } else {
                         const payload = {email}
                         const token = jwt.sign(payload, secret, {expiresIn : '1h'})
-                        const localTime =  new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
-                        // req.session.cookie.expires = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)
-                        req.session.cookie.maxAge = 10000
-                        res.cookie('token', token, {httpOnly:true, expires:new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000)}).sendStatus(200)
+
+                        var localTime = Date.now() - new Date().getTimezoneOffset() * 60000
+                        var limitTime = 10 * 1000
+                        req.session.cookie.expires = new Date(localTime + limitTime)
+                        req.session.cookie.httpOnly = true
+                        res.cookie('token', token).sendStatus(200)
 
                         console.log(localTime)
                         console.log(req.sessionID)
                         console.log(req.session)
+
                     }
                })
             }
@@ -84,10 +87,23 @@ router.route('/api/signin')
 router.route('/api/signout')
     .get(WithAuth, (req, res, next) => {
         res.clearCookie('token').sendStatus(200)
+        var sCE = req.session.cookie.expires
+
+        req.session.destroy((err)=>{
+            if(err) {
+                console.log(err)
+            } else {
+                req.sessionID = null
+                console.log('SignOut')
+                console.log(req.sessionID)
+                console.log(req.session)
+            }
+        })
     })
 
 router.route('/api/checkCookie')
     .get(WithAuth, (req, res, next) => {
+        console.log(req.session)
         if(req.cookies.token && req.cookies.token.mberSn !== ""){
             res.send(req.session)
         } else {
@@ -95,16 +111,16 @@ router.route('/api/checkCookie')
         }
     })
 
-router.route('/api/loginSession')
-    .get((req, res, next) => {
-        res.json(req.session)
-        if(!req.session.num) {
-            req.session.num = 1
-        } else {
-            req.session.num = req.session.num + 1
-        }
-        res.send(`Number : ${req.session.num}`)
-    })
+// router.route('/api/loginSession')
+//     .get((req, res, next) => {
+//         res.json(req.session)
+//         if(!req.session.num) {
+//             req.session.num = 1
+//         } else {
+//             req.session.num = req.session.num + 1
+//         }
+//         res.send(`Number : ${req.session.num}`)
+//     })
 
 
 

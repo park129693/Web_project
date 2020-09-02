@@ -9,7 +9,7 @@ const Menu = () => {
     useEffect(() => {
         fetch('/api/checkCookie')
         .then(res => {
-            console.log(res.session)
+            console.log(res)
             if(login !== res.status){
                 if(res.status === 200) setLogin(true)
                 else setLogin(false)

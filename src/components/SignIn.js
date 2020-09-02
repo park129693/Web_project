@@ -50,25 +50,23 @@ const SignIn = () => {
 
     return (
         <div  style={{display:'flex', justifyContent:'center', alignItems:'center', height:'auto'}}>
+            <Form onSubmit={onSubmit}>
+                <h1>Sign In</h1>
 
-        <Form onSubmit={onSubmit}>
-            <h1>Sign In</h1>
-
-            <div class="container">
-            <div class="row">
-            <div class="col-xm-12">
-                <Form.Group controlId="formBasicEmail">
-                    <Form.Control type="email" placeholder="Enter Email" name="email" value={user.email} onChange={handleInputChange} required />
-                </Form.Group>
-                <Form.Group controlId="formBasicPassword">
-                    <Form.Control type="password" placeholder="Enter Password" name="password" value={user.password} onChange={handleInputChange} required />
-                </Form.Group>
-            </div>
-            </div>
-            </div>
-            <Button type="submit" size="md">Sign In</Button>
-        </Form>
-
+                <div class="container">
+                <div class="row">
+                <div class="col-xm-12">
+                    <Form.Group controlId="formBasicEmail">
+                        <Form.Control type="email" placeholder="Enter Email" name="email" value={user.email} onChange={handleInputChange} required />
+                    </Form.Group>
+                    <Form.Group controlId="formBasicPassword">
+                        <Form.Control type="password" placeholder="Enter Password" name="password" value={user.password} onChange={handleInputChange} required />
+                    </Form.Group>
+                </div>
+                </div>
+                </div>
+                <Button type="submit" size="md">Sign In</Button>
+            </Form>
         </div>
     )
 }
