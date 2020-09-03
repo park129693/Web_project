@@ -5,9 +5,8 @@ var path = require('path')
 var mongoose = require('mongoose')
 var cors = require('cors')
 var session = require('express-session')
-// var FileStore = require('session-file-store')(session)
-
 var apiRouter = require('./routes/apiRouter')
+var FileStore = require('session-file-store')(session);
 
 require('dotenv').config()
 var app = express()
@@ -15,11 +14,18 @@ var app = express()
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 app.use(cookieParser())
-app.use(session({ 
+app.use(session({
+    name: 'Sessiontest',
     secret: 'seesionDog',
-    resave: false,
+    resave: true,
     saveUninitialized: true,
-    // store: new FileStore({path: './sessions'})
+    store: new FileStore({
+        ttl: 180,
+        reapInterval: 5 * 1000
+    }),
+    cookie: {
+        expires: new Date(Date.now() - new Date().getTimezoneOffset() * 60000),
+      }
 }))
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true}, (err) => {

@@ -5,7 +5,9 @@ var jwt = require('jsonwebtoken')
 var WithAuth = require('./middleware')
 var session = require('express-session')
 const { json } = require('body-parser')
-const { Store } = require('express-session')
+var FileStore = require('session-file-store')(session)
+var fs = require('fs')
+var path = require('path')
 
 const secret = "mysecrethhhhhh"
 
@@ -49,7 +51,6 @@ router.route('/api/signin')
     .post((req, res, next) => {
         const {email, password} = req.body
 
-
         User.findOne({email}, (err, result) =>{ 
             if(err) {
                 console.log(err)
@@ -66,18 +67,16 @@ router.route('/api/signin')
                         res.status(401).json({error : 'Incorrect password'})
                     } else {
                         const payload = {email}
-                        const token = jwt.sign(payload, secret, {expiresIn : '1h'})
-
-                        var localTime = Date.now() - new Date().getTimezoneOffset() * 60000
-                        var limitTime = 10 * 1000
-                        req.session.cookie.expires = new Date(localTime + limitTime)
-                        req.session.cookie.httpOnly = true
+                        const token = jwt.sign(payload, secret, {expiresIn: '1h'})
                         res.cookie('token', token).sendStatus(200)
 
-                        console.log(localTime)
-                        console.log(req.sessionID)
-                        console.log(req.session)
+                        // var localTime = Date.now() - new Date().getTimezoneOffset() * 60000
+                        // var limitTime = 10 * 1000
+                        // req.session.cookie.expires = new Date(localTime + limitTime)
+                        req.session.cookie.httpOnly = true
 
+                        console.log(req.session)
+                        console.log(req.sessionID)
                     }
                })
             }
@@ -86,42 +85,29 @@ router.route('/api/signin')
 
 router.route('/api/signout')
     .get(WithAuth, (req, res, next) => {
+        var Sesspath = path.resolve(__dirname, req.sessionID + '.json')
         res.clearCookie('token').sendStatus(200)
-        var sCE = req.session.cookie.expires
-
         req.session.destroy((err)=>{
             if(err) {
                 console.log(err)
             } else {
                 req.sessionID = null
-                console.log('SignOut')
-                console.log(req.sessionID)
                 console.log(req.session)
+                console.log(req.sessionID)
+                fs.readFile(Sesspath, ()=>{
+                    FileStore.prototype.destroy()
+                })
             }
         })
     })
 
 router.route('/api/checkCookie')
     .get(WithAuth, (req, res, next) => {
-        console.log(req.session)
         if(req.cookies.token && req.cookies.token.mberSn !== ""){
             res.send(req.session)
         } else {
             res.sendStatus(401)
         }
     })
-
-// router.route('/api/loginSession')
-//     .get((req, res, next) => {
-//         res.json(req.session)
-//         if(!req.session.num) {
-//             req.session.num = 1
-//         } else {
-//             req.session.num = req.session.num + 1
-//         }
-//         res.send(`Number : ${req.session.num}`)
-//     })
-
-
 
 module.exports = router

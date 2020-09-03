@@ -9,7 +9,6 @@ const WithAuth = ({children}) => {
     useEffect(() => {
         fetch('/api/checkCookie')
         .then(res => {
-            console.log(res)
             if(res.status === 200){
                 setLoading(false)
             } else {

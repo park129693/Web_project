@@ -33,7 +33,6 @@ const SignIn = () => {
             body : JSON.stringify(user)
         })
         .then(res => {
-            console.log(res)
             if(res.status === 200){
                 history.push('/') 
             } else {
