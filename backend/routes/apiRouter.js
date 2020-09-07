@@ -66,9 +66,14 @@ router.route('/api/signin')
                         const payload = {email}
                         const token = jwt.sign(payload, secret, {expiresIn: '1h'})
                         res.cookie('token', token).sendStatus(200)
+                       
                         
                         var localTime = Date.now() - new Date().getTimezoneOffset() * 60000
+                        var timestamp = new Date(localTime).getTime()
+                        // new Date(localTime - new Date().getUTCMilliseconds())
+                        console.log(timestamp)
                         var limitTime = 10 * 1000
+
                         req.session.cookie.expires = new Date(localTime + limitTime)
                         req.session.cookie.httpOnly = true
                         
@@ -82,9 +87,9 @@ router.route('/api/signin')
 
 router.route('/api/signout')
     .get(WithAuth, (req, res, next) => {
-        req.session.destroy(()=>{
-                res.clearCookie('token')
-                res.sendStatus(200)
+        req.session.destroy(()=>{   
+            res.clearCookie('token')
+            res.sendStatus(200)
         })
     })
 
@@ -95,12 +100,6 @@ router.route('/api/checkCookie')
         } else {
             res.sendStatus(401)
         }
-    })
-
-router.route('/api/sesCheck') // test 용
-    .get((req, res, next)=>{
-        res.render(req.session)
-        console.log(req.session)
     })
 
 module.exports = router

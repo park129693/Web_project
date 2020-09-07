@@ -12,8 +12,8 @@ const SignOut = () => {
     })
 
     return(
-        <>
-        </>
+    <>
+    </>
     )
 }
 
