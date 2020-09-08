@@ -6,6 +6,7 @@ var mongoose = require('mongoose')
 var cors = require('cors')
 var session = require('express-session')
 var apiRouter = require('./routes/apiRouter')
+const {  } = require('express-session')
 var FileStore = require('session-file-store')(session);
 
 require('dotenv').config()
@@ -15,12 +16,17 @@ app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 app.use(cookieParser())
 
+app.set('trust proxy', 1)
 app.use(session({
     name: 'Sessiontest',
     secret: 'seesionDog',
+    rolling: true,
     resave: false,
     saveUninitialized: true,
     store: new FileStore(),
+    cookie: {
+        httpOnly: true
+    }
 }))
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true}, (err) => {

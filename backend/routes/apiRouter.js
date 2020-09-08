@@ -66,19 +66,15 @@ router.route('/api/signin')
                         const payload = {email}
                         const token = jwt.sign(payload, secret, {expiresIn: '1h'})
                         res.cookie('token', token).sendStatus(200)
-                       
                         
                         var localTime = Date.now() - new Date().getTimezoneOffset() * 60000
-                        var timestamp = new Date(localTime).getTime()
-                        // new Date(localTime - new Date().getUTCMilliseconds())
-                        console.log(timestamp)
-                        var limitTime = 10 * 1000
-
+                        // var timestamp = new Date(localTime).getTime()
+                        var limitTime = 1000
                         req.session.cookie.expires = new Date(localTime + limitTime)
-                        req.session.cookie.httpOnly = true
-                        
+
                         console.log(req.session)
                         console.log(req.sessionID)
+                        next()
                     }
                })
             }
@@ -101,5 +97,19 @@ router.route('/api/checkCookie')
             res.sendStatus(401)
         }
     })
+
+router.route('/api/sessionCheck')
+    .get((req, res, next)=>{
+        // console.log(JSON.parse(req.session.cookie.expires))
+        // if(req.session.cookie.expires === JSON.parse(req.session.cookie.expires)){
+            console.log(req)
+        console.log(req.session)
+        //    var data =  JSON.parse(req)
+        //     res.json(data)
+            // console.log(req)
+            // res.sendStatus(200)
+        // }
+    })
+
 
 module.exports = router

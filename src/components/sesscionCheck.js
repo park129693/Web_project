@@ -1,11 +1,12 @@
 import React from 'react'
 import { useHistory } from "react-router-dom";
 
-const SignOut = () => {
+const sessionCheck = () => {
     const history = useHistory()
-
-    fetch('/api/signout')
+    
+    fetch('/api/sessionCheck')
     .then(res =>{
+        console.log(res)
         if(res.status === 200){
             history.push('/')
         }
@@ -14,7 +15,7 @@ const SignOut = () => {
     return(
     <>
     </>
-    )
+    )    
 }
 
-export default SignOut
+export default sessionCheck
